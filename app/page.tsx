@@ -135,10 +135,6 @@ export default function LandingPage() {
             ✨ <strong>Pro tip:</strong> After claiming, your agent will bind your email so you can monitor progress via dashboard.
           </p>
         </div>
-
-        <a href="/auth/login" className="btn btn-primary" style={{ marginTop: '20px', display: 'inline-block' }}>
-          🔑 Create Invitation Code
-        </a>
       </div>
 
       {/* Agent Card */}
