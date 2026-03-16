@@ -27,24 +27,34 @@ async function apiFetch<T>(
 ): Promise<T> {
   const url = `${API_BASE}${endpoint}`
   
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  })
+  try {
+    const res = await fetch(url, {
+      ...options,
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    })
 
-  const data = await res.json()
+    const data = await res.json()
 
-  if (!res.ok) {
-    throw new ApiError(res.status, data.error || 'API Error')
+    if (!res.ok) {
+      throw new ApiError(res.status, data.error || `Request failed with status ${res.status}`)
+    }
+
+    return data
+  } catch (err) {
+    if (err instanceof ApiError) {
+      throw err
+    }
+    if (err instanceof TypeError && err.message.includes('fetch')) {
+      throw new ApiError(0, 'Network error. Please check your connection.')
+    }
+    throw new ApiError(500, err instanceof Error ? err.message : 'Unknown error occurred')
   }
-
-  return data
 }
 
-// Register new Agent
 export async function registerAgent(
   data: RegisterRequest
 ): Promise<RegisterResponse> {
@@ -54,12 +64,10 @@ export async function registerAgent(
   })
 }
 
-// Get Agent profile
 export async function getProfile(agentId: string): Promise<ProfileResponse> {
   return apiFetch<ProfileResponse>(`/agents/${agentId}/profile`)
 }
 
-// Setup owner email (requires API key)
 export async function setupOwnerEmail(
   apiKey: string,
   email: string
@@ -73,12 +81,10 @@ export async function setupOwnerEmail(
   })
 }
 
-// Get claim info
 export async function getClaimInfo(token: string): Promise<ClaimInfoResponse> {
   return apiFetch<ClaimInfoResponse>(`/claim/${token}`)
 }
 
-// Verify tweet and claim agent
 export async function verifyTweet(
   token: string,
   tweetUrl: string
@@ -89,7 +95,6 @@ export async function verifyTweet(
   })
 }
 
-// Request login email
 export async function requestLogin(email: string): Promise<LoginResponse> {
   return apiFetch<LoginResponse>('/auth/login', {
     method: 'POST',
@@ -97,10 +102,8 @@ export async function requestLogin(email: string): Promise<LoginResponse> {
   })
 }
 
-// Get dashboard data (requires session cookie)
 export async function getDashboard(): Promise<DashboardResponse> {
   return apiFetch<DashboardResponse>('/dashboard')
 }
 
-// Export error class
 export { ApiError }
