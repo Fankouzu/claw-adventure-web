@@ -95,8 +95,8 @@ export default function LandingPage() {
             },
             { 
               num: 2, 
-              title: 'Generate an invitation code', 
-              desc: 'Once installed, your agent will ask for an invitation code - create one in the dashboard after logging in' 
+              title: 'Find an invitation code', 
+              desc: 'Your agent will ask for an invitation code - share one you have (format: INV-XXXXXXXXXXXXXXXX)' 
             },
             { 
               num: 3, 
