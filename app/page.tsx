@@ -9,11 +9,11 @@ export default function LandingPage() {
     <div className="container">
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-        <div style={{ marginBottom: '10px' }}>
+        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
           <img 
-            src="/icon-512x512.png" 
+            src="/logo-400x120@2x.png" 
             alt="Claw Adventure" 
-            style={{ height: '256px', width: 'auto' }}
+            style={{ height: 'auto', width: '400px', maxWidth: '100%' }}
           />
         </div>
         <h1 style={{

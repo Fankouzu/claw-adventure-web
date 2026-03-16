@@ -1,62 +1,82 @@
-# CLAUDE.md - Claw Adventure Web 前端项目配置
+# CLAUDE.md - Claw Adventure Web Frontend Project Configuration
 
-## 项目概述
+## Project Overview
 
-这是 Claw Adventure 游戏的前端 Web 应用，采用 Next.js 14 + TypeScript 开发。
+This is the frontend web application for Claw Adventure game, built with Next.js 14 + TypeScript.
 
-**后端 API**: https://mudclaw.net/api/v1  
+**Backend API**: https://mudclaw.net/api  
 **WebSocket**: wss://ws.adventure.mudclaw.net
 
-## 开发规范
+## Development Standards
 
-### 技术栈
+### Tech Stack
 - Next.js 14 (App Router)
 - TypeScript
 - Tailwind CSS
-- React Query (数据获取)
+- Prisma 7.x + PostgreSQL
+- iron-session (Authentication)
+- Resend (Email sending)
 
-### 代码风格
-- 使用函数组件 + Hooks
-- 组件文件放在 `components/`
-- API 调用封装在 `lib/api.ts`
-- 类型定义放在 `types/`
+### Code Style
+- Use functional components + Hooks
+- Components in `components/`
+- API calls wrapped in `lib/`
+- Type definitions in `types/`
 
-### 目录结构
+### Directory Structure
 ```
-/app                 # Next.js App Router 页面
-/components          # React 组件
-/lib                 # 工具函数、API 封装
-/types               # TypeScript 类型定义
-/public              # 静态资源
-/specs               # 规格文档（开发参考）
-/memory              # 开发进度、决策记录
+/app                 # Next.js App Router pages
+  /api               # API Routes (PostgreSQL connection)
+  /agents            # Agent related pages
+  /auth              # Authentication pages
+  /claim             # Claim flow pages
+  /dashboard         # User Dashboard
+/components          # React components
+/lib                 # Utility functions
+  db.ts              # Prisma Client
+  session.ts         # iron-session config
+  crypto.ts          # Key generation, hashing
+/prisma              # Prisma schema
+/public              # Static assets
+/types               # TypeScript definitions
 ```
 
-## Session 启动检查清单
+## API Endpoints
 
-启动新开发会话时，请按顺序阅读：
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/agents/register` | POST | Register new Agent |
+| `/api/agents/[name]/profile` | GET | Get Agent profile |
+| `/api/auth/login` | POST | Request login email |
+| `/api/dashboard` | GET | Get user dashboard data |
+| `/api/claim/[token]` | GET | Get claim info |
+| `/api/claim/[token]/verify` | POST | Verify tweet to complete claim |
 
-1. [ ] `/skill.md` - 理解开发目标和 API 契约
-2. [ ] `/specs/pages.md` - 理解页面规格
-3. [ ] `/memory/progress.json` - 了解当前开发进度
-4. [ ] `/memory/decisions.md` - 了解关键架构决策
-
-## 开发命令
+## Development Commands
 
 ```bash
-npm run dev      # 启动开发服务器
-npm run build    # 构建生产版本
-npm run lint     # 代码检查
-npm run test     # 运行测试
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run lint     # Run linter
 ```
 
-## 部署
+## Environment Variables
 
-- 平台：Vercel
-- 分支：main 自动部署
+```bash
+DATABASE_URL           # PostgreSQL connection string
+SESSION_SECRET         # iron-session secret (min 32 chars)
+NEXT_PUBLIC_BASE_URL   # Application base URL
+RESEND_API_KEY         # Resend API key (optional)
+RESEND_FROM_EMAIL      # Sender email (optional)
+```
 
-## 语言偏好
+## Deployment
 
-- 所有对话使用中文
-- 代码注释使用英文
-- 提交信息使用英文
+- Platform: Railway
+- Database: PostgreSQL (Railway)
+
+## Language Preference
+
+- All conversations in Chinese
+- Code comments in English
+- Commit messages in English

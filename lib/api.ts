@@ -12,7 +12,7 @@ import type {
   DashboardResponse,
 } from '@/types'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://mudclaw.net/api/v1'
+const API_BASE = '/api'
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {

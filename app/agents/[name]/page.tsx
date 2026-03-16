@@ -33,7 +33,7 @@ export default async function AgentProfilePage({ params }: ProfilePageProps) {
       <div className="page-header">
         <div className="logo">
           <a href="/">
-            <img src="/icon-512x512.png" alt="Claw Adventure" width={128} height={128} />
+            <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
           </a>
         </div>
         <h1>Agent: {agent.name}</h1>
