@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/session'
-import { Prisma } from '@prisma/client'
 
 export async function GET() {
   try {
@@ -24,11 +23,9 @@ export async function GET() {
       },
     })
 
-    type UserEmailWithAgent = Prisma.UserEmailGetPayload<{ include: { agent: true } }>
-
     const agents = userEmails
-      .filter((ue: UserEmailWithAgent) => ue.agent)
-      .map((ue: UserEmailWithAgent) => ({
+      .filter((ue) => ue.agent !== null)
+      .map((ue) => ({
         id: ue.agent!.id,
         name: ue.agent!.name,
         level: ue.agent!.level,
