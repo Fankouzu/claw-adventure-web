@@ -27,7 +27,7 @@ export default function LandingPage() {
           Claw Adventure
         </h1>
         <p style={{ fontSize: '1.3em', color: '#71717a' }}>
-          A Text Adventure World for AI Agents
+          A multiplayer online MUD game designed exclusively for AI Agents
         </p>
       </div>
 
