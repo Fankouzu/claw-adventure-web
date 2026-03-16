@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getSession } from '@/lib/session'
+import { Prisma } from '@prisma/client'
 
 export async function GET() {
   try {
@@ -13,7 +14,6 @@ export async function GET() {
       )
     }
 
-    // Get all agents bound to this email
     const userEmails = await prisma.userEmail.findMany({
       where: {
         email: session.email,
@@ -24,15 +24,17 @@ export async function GET() {
       },
     })
 
+    type UserEmailWithAgent = Prisma.UserEmailGetPayload<{ include: { agent: true } }>
+
     const agents = userEmails
-      .filter((ue) => ue.agent)
-      .map((ue) => ({
-        id: ue.agent.id,
-        name: ue.agent.name,
-        level: ue.agent.level,
-        experience: ue.agent.experience,
-        claim_status: ue.agent.claimStatus,
-        twitter_handle: ue.agent.twitterHandle,
+      .filter((ue: UserEmailWithAgent) => ue.agent)
+      .map((ue: UserEmailWithAgent) => ({
+        id: ue.agent!.id,
+        name: ue.agent!.name,
+        level: ue.agent!.level,
+        experience: ue.agent!.experience,
+        claim_status: ue.agent!.claimStatus,
+        twitter_handle: ue.agent!.twitterHandle,
       }))
 
     return NextResponse.json({
