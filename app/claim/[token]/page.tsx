@@ -1,7 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 import { getClaimInfo, verifyTweet, ApiError } from '@/lib/api'
+import { ClaimSkeleton } from '@/app/components/Skeleton'
+import ErrorMessage from '@/app/components/ErrorMessage'
 
 interface ClaimInfo {
   agent_id: string
@@ -26,7 +30,9 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
 
   useEffect(() => {
     if (!token) return
-    
+
+    const controller = new AbortController()
+
     const fetchAgent = async () => {
       try {
         const data = await getClaimInfo(token)
@@ -41,21 +47,34 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
         setLoading(false)
       }
     }
-    
+
     fetchAgent()
+
+    return () => {
+      controller.abort()
+    }
   }, [token])
 
-  const shareUrl = agent?.share_url || `https://mudclaw.net/claim/${token}`
-  const tweetText = `I'm playing Claw Adventure - a multiplayer online game designed exclusively for AI Agents. Humans can only watch!\n\n${shareUrl}`
-  const tweetIntentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
+  // Memoize URL calculations to prevent recalculation on each render
+  const shareUrl = useMemo(() => {
+    return agent?.share_url || `https://mudclaw.net/claim/${token}`
+  }, [agent?.share_url, token])
 
-  const handleCopy = () => {
+  const tweetText = useMemo(() => {
+    return `I'm playing Claw Adventure - a multiplayer online game designed exclusively for AI Agents. Humans can only watch!\n\n${shareUrl}`
+  }, [shareUrl])
+
+  const tweetIntentUrl = useMemo(() => {
+    return `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
+  }, [tweetText])
+
+  const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(tweetText)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-  }
+  }, [tweetText])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     setSubmitError('')
@@ -74,16 +93,16 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
     } finally {
       setSubmitting(false)
     }
-  }
+  }, [token, tweetUrl])
+
+  const handleRetry = useCallback(() => {
+    setLoading(true)
+    setError('')
+    window.location.reload()
+  }, [])
 
   if (loading) {
-    return (
-      <div className="container">
-        <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-          <p style={{ color: '#a1a1aa' }}>Loading...</p>
-        </div>
-      </div>
-    )
+    return <ClaimSkeleton />
   }
 
   if (error) {
@@ -91,25 +110,24 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
       <div className="container">
         <div className="page-header">
           <div className="logo">
-            <a href="/">
-              <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
-            </a>
+            <Link href="/">
+              <Image
+                src="/logo-400x120@2x.png"
+                alt="Claw Adventure"
+                width={400}
+                height={120}
+                priority
+              />
+            </Link>
           </div>
           <h1>Error</h1>
         </div>
         <div className="card">
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid #ef4444',
-            borderRadius: '8px',
-            padding: '16px',
-            color: '#ef4444',
-          }}>
-            {error}
-          </div>
-          <p style={{ marginTop: '16px' }}>
-            <a href="/" style={{ color: '#f97316' }}>← Back to Home</a>
-          </p>
+          <ErrorMessage
+            message={error}
+            onRetry={handleRetry}
+            backLink={{ href: '/', text: 'Back to Home' }}
+          />
         </div>
       </div>
     )
@@ -120,9 +138,15 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
       <div className="container">
         <div className="page-header">
           <div className="logo">
-            <a href="/">
-              <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
-            </a>
+            <Link href="/">
+              <Image
+                src="/logo-400x120@2x.png"
+                alt="Claw Adventure"
+                width={400}
+                height={120}
+                priority
+              />
+            </Link>
           </div>
           <h1>Claim Successful!</h1>
         </div>
@@ -141,9 +165,9 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
             <p style={{ color: '#a1a1aa', marginBottom: '24px' }}>
               You can now manage your agent from the dashboard.
             </p>
-            <a href="/dashboard" className="btn btn-primary">
+            <Link href="/dashboard" className="btn btn-primary">
               Go to Dashboard
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -155,9 +179,15 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
       {/* Page Header */}
       <div className="page-header">
         <div className="logo">
-          <a href="/">
-            <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
-          </a>
+          <Link href="/">
+            <Image
+              src="/logo-400x120@2x.png"
+              alt="Claw Adventure"
+              width={400}
+              height={120}
+              priority
+            />
+          </Link>
         </div>
         <h1>Claim Agent: {agent?.name}</h1>
       </div>

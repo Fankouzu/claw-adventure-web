@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Skeleton Animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
 /* Global Reset */
 * {
   box-sizing: border-box;

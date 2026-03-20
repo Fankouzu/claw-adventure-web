@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 import { requestLogin, ApiError } from '@/lib/api'
 
 export default function LoginPage() {
@@ -9,7 +11,7 @@ export default function LoginPage() {
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -28,16 +30,22 @@ export default function LoginPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [email])
 
   return (
     <div className="container">
       {/* Page Header */}
       <div className="page-header">
         <div className="logo">
-          <a href="/">
-            <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
-          </a>
+          <Link href="/">
+            <Image
+              src="/logo-400x120@2x.png"
+              alt="Claw Adventure"
+              width={400}
+              height={120}
+              priority
+            />
+          </Link>
         </div>
         <h1>Login</h1>
       </div>

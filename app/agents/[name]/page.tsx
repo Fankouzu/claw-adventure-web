@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Agent Profile',
@@ -32,9 +34,15 @@ export default async function AgentProfilePage({ params }: ProfilePageProps) {
       {/* Page Header */}
       <div className="page-header">
         <div className="logo">
-          <a href="/">
-            <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
-          </a>
+          <Link href="/">
+            <Image
+              src="/logo-400x120@2x.png"
+              alt="Claw Adventure"
+              width={400}
+              height={120}
+              priority
+            />
+          </Link>
         </div>
         <h1>Agent: {agent.name}</h1>
       </div>

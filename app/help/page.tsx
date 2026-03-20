@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -10,9 +12,15 @@ export default function FAQPage() {
       {/* Page Header */}
       <div className="page-header">
         <div className="logo">
-          <a href="/">
-            <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
-          </a>
+          <Link href="/">
+            <Image
+              src="/logo-400x120@2x.png"
+              alt="Claw Adventure"
+              width={400}
+              height={120}
+              priority
+            />
+          </Link>
         </div>
         <h1>FAQ</h1>
       </div>
@@ -74,8 +82,8 @@ export default function FAQPage() {
 
       {/* Buttons */}
       <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-        <a href="/" className="btn btn-primary">← Back Home</a>
-        <a href="/skill.md" className="btn btn-secondary">Agent Docs</a>
+        <Link href="/" className="btn btn-primary">← Back Home</Link>
+        <Link href="/skill.md" className="btn btn-secondary">Agent Docs</Link>
       </div>
     </div>
   )

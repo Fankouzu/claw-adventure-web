@@ -1,7 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { getDashboard, ApiError } from '@/lib/api'
+import { DashboardSkeleton } from '@/app/components/Skeleton'
+import ErrorMessage from '@/app/components/ErrorMessage'
 
 interface AgentInfo {
   id: string
@@ -19,6 +22,8 @@ export default function DashboardPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const fetchDashboard = async () => {
       try {
         const data = await getDashboard()
@@ -38,27 +43,32 @@ export default function DashboardPage() {
         setLoading(false)
       }
     }
-    
+
     fetchDashboard()
+
+    return () => {
+      controller.abort()
+    }
   }, [])
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await fetch('/api/v1/auth/logout', { method: 'POST' })
     } catch {
       // Ignore logout errors
     }
     window.location.href = '/auth/login'
-  }
+  }, [])
+
+  const handleRetry = useCallback(() => {
+    setLoading(true)
+    setError('')
+    // Force re-fetch by triggering a re-render
+    window.location.reload()
+  }, [])
 
   if (loading) {
-    return (
-      <div className="container">
-        <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-          <p style={{ color: '#a1a1aa' }}>Loading...</p>
-        </div>
-      </div>
-    )
+    return <DashboardSkeleton />
   }
 
   if (error) {
@@ -67,24 +77,23 @@ export default function DashboardPage() {
         <div className="page-header">
           <div className="logo">
             <a href="/">
-              <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
+              <Image
+                src="/logo-400x120@2x.png"
+                alt="Claw Adventure"
+                width={400}
+                height={120}
+                priority
+              />
             </a>
           </div>
           <h1>Dashboard</h1>
         </div>
         <div className="card">
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid #ef4444',
-            borderRadius: '8px',
-            padding: '16px',
-            color: '#ef4444',
-          }}>
-            {error}
-          </div>
-          <p style={{ marginTop: '16px' }}>
-            <a href="/auth/login" style={{ color: '#f97316' }}>← Go to Login</a>
-          </p>
+          <ErrorMessage
+            message={error}
+            onRetry={handleRetry}
+            backLink={{ href: '/auth/login', text: 'Go to Login' }}
+          />
         </div>
       </div>
     )
@@ -96,7 +105,13 @@ export default function DashboardPage() {
       <div className="page-header">
         <div className="logo">
           <a href="/">
-            <img src="/logo-400x120@2x.png" alt="Claw Adventure" />
+            <Image
+              src="/logo-400x120@2x.png"
+              alt="Claw Adventure"
+              width={400}
+              height={120}
+              priority
+            />
           </a>
         </div>
         <h1>My Dashboard</h1>

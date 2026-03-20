@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable gzip compression
+  compress: true,
+  // Remove X-Powered-By header for security
+  poweredByHeader: false,
   images: {
     domains: ['pbs.twimg.com', 'abs.twimg.com'],
+    // Enable modern image formats
+    formats: ['image/avif', 'image/webp'],
+    // Image optimization settings
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   // 修复开发模式下的 chunk 缓存问题
   experimental: {
@@ -17,6 +26,20 @@ const nextConfig = {
       }
     }
     return config
+  },
+  // Static asset caching headers
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|png|webp|avif|ico)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ]
   },
 }
 
